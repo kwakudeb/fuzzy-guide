@@ -1,0 +1,142 @@
+################################################################################
+# proj02.py
+# Computer Project 02
+# This python program runs the game of Nim and has steps as follows:
+#   1. The program begins by offering a welcome message and displaying the rules of the game.
+#   2. Asks the player if he wants to play the game.
+#   3. Asks for the number of stones to initialize the piles.
+#   4. Play alternates between the human and computer according to the rules of Nim. The
+#       human player always starts first.
+#   5. If the player picks from a pile, computer picks from the opposite pile on the
+#      condition that the opposite pile is not empty. if empty, it picks from the same pile.
+#   6. The last to pick the remaining stones from either pile such that, both piles have
+#      no stones wins.
+#   7. When the game has come to its conclusion, the program outputs whether the human or
+#       the computer won.
+#   8. The program then asks if the user wants to play again, and the loop continues until
+#       the player opts out.
+################################################################################
+
+
+# Display the rules of the game
+banner = """*** Welcome to the Game of Nim! ***
+*Spoiler Alert: I am probably going to win...* 
+"""
+
+rules = """Nim is a deceptively simple two-player game where stones mysteriously disappear,
+one, two, or three at a time!
+The game kicks off with two piles of stones, cleverly named Pile 1 and Pile 2 
+(because creativity matters!). Players take turns. 
+On your turn, pick a pile and decide how many stones to make vanish: 1, 2, or 3.
+The goal? Be the one to remove the very last stone and victory!
+But hey, do not feel bad when you lose...I have had lots of practice!
+"""
+print(banner)
+print(rules)
+
+
+import random
+random.seed(10)
+
+pile_choice = 0
+pile_one_count = 0
+pile_two_count = 0
+human_score = 0
+computer_score = 0
+affirm_play = input(":~Would you like to play? (0=no, 1=yes) ~:")
+
+while affirm_play == "1":
+    print("\nStarting a new game...")
+
+    pile_num = int(input(":~How many stones per pile would you like to play? ~:"))
+
+    print(f"Start --> Pile 1: {pile_num}    Pile 2: {pile_num}")
+
+    pile_one_count = pile_num
+    pile2_count = pile_num
+
+
+    while pile_one_count != 0 or pile2_count != 0:  # Game continues until both piles are 0
+
+        # Player's turn
+        valid_move = False
+        while not valid_move:
+            pile_choice = input(":~Choose a pile (1 or 2) ~:")
+
+            if pile_choice == "1" and pile_one_count > 0:
+                while True:
+                    player_take1 = int(input(":~Choose stones to remove from pile ~:"))
+                    if player_take1 in range(1, 4) and player_take1 <= pile_one_count:
+                        pile_one_count -= player_take1
+                        print(f"Player -> Remove {player_take1} stones from pile 1")
+                        print(f"Pile 1: {pile_one_count}    Pile 2: {pile2_count}")
+                        valid_move = True
+                        break
+                    else:
+                        print("Invalid number of stones. Please try again.")
+
+            elif pile_choice == "2" and pile2_count > 0:
+                while True:
+                    player_take1 = int(input(":~Choose stones to remove from pile ~:"))
+                    if player_take1 in range(1, 4) and player_take1 <= pile2_count:
+                        pile2_count -= player_take1
+                        print(f"Player -> Remove {player_take1} stones from pile 2")
+                        print(f"Pile 1: {pile_one_count}    Pile 2: {pile2_count}")
+                        valid_move = True
+                        break
+                    else:
+                        print("Invalid number of stones. Please try again.")
+
+            else:
+                print("Pile must be 1 or 2 and non-empty. Please try again.")
+
+        # To check if player wins after their turn
+        if pile_one_count == 0 and pile2_count == 0:
+            print("\nCONGRATULATIONS! Player wins!")
+            print("You actually won! Did you cheat?")
+            print("Enjoy your bragging rights (for now). I am coming back stronger!")
+            human_score += 1
+            print(f"Score -> human: {human_score} ; computer: {computer_score}")
+            break
+
+        # Computer's turn: picks from the opposite pile if possible
+        if pile_one_count != 0 or pile2_count != 0:  # Computer moves only if game isn't over
+            if pile_choice == "1" and pile2_count > 0:
+                comp_take = random.randint(1, 3)
+                if comp_take > pile2_count:
+                    comp_take = pile2_count
+                print(f"Computer -> Remove {comp_take} stones from pile 2")
+                pile2_count -= comp_take
+            elif pile_choice == "1" and pile2_count == 0:  # If pile 2 is empty, pick from pile 1
+                comp_take = random.randint(1, 3)
+                if comp_take > pile_one_count:
+                    comp_take = pile_one_count
+                print(f"Computer -> Remove {comp_take} stones from pile 1")
+                pile_one_count -= comp_take
+
+            elif pile_choice == "2" and pile_one_count > 0:
+                comp_take = random.randint(1, 3)
+                if comp_take > pile_one_count:
+                    comp_take = pile_one_count
+                print(f"Computer -> Remove {comp_take} stones from pile 1")
+                pile_one_count -= comp_take
+            elif pile_choice == "2" and pile_one_count == 0:  # If pile 1 is empty, pick from pile 2
+                comp_take = random.randint(1, 3)
+                if comp_take > pile2_count:
+                    comp_take = pile2_count
+                print(f"Computer -> Remove {comp_take} stones from pile 2")
+                pile2_count -= comp_take
+
+            print(f"Pile 1: {pile_one_count}    Pile 2: {pile2_count}")
+
+        # To check if computer wins after its turn
+        if pile_one_count == 0 and pile2_count == 0:
+            print("\nComputer wins!")
+            computer_score += 1
+            print(f"Score -> human: {human_score} ; computer: {computer_score}")
+            break
+
+    affirm_play = input(":~Would you like to play again? (0=no, 1=yes) ~:")
+    if affirm_play == "0":
+        print("")
+        print("Thanks for playing! See you again soon!")
